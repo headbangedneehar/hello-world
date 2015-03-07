@@ -1,69 +1,48 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
+using System.Text;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
-using Microsoft.Xna.Framework.Net;
-using Microsoft.Xna.Framework.Storage;
- 
-namespace ParticleEngine2D
+using Microsoft.Xna.Framework;
+
+namespace ParticleEngine1
 {
-    public class Game1 : Microsoft.Xna.Framework.Game
-    {
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
-        ParticleEngine particleEngine;
- 
-        public Game1()
+    public class Particle
+    {   
+        public Texture2D Texture{get;set;}
+        public float Angle{get;set;}
+        public float Angularvelocity { get; set; }
+        public Vector2 Position { get; set; }
+        public Vector2 Velocity { get; set; }
+        public Color Color { get; set; }
+        public float Size { get; set; }
+        public int TTL{get; set;}
+
+        public Particle(Texture2D texture,Vector2 position,Vector2 velocity,float angle,float angularvelocity,Color color,float size,int ttl)
         {
-            graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
+            Texture = texture;
+            Position = position;
+            Velocity = velocity;
+            Angle = angle;
+            Angularvelocity = angularvelocity;
+            Color = color;
+            Size = size;
+            TTL = ttl;
         }
- 
-        protected override void Initialize()
+
+        public void Update()
         {
-            base.Initialize();
+            TTL--;
+            Position += Velocity;
+            Angle += Angularvelocity;            
         }
- 
-        protected override void LoadContent()
+
+        public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch = new SpriteBatch(GraphicsDevice);
- 
-            List<Texture2D> textures = new List<Texture2D>();
-            textures.Add(Content.Load<Texture2D>("circle"));
-            textures.Add(Content.Load<Texture2D>("star"));
-            textures.Add(Content.Load<Texture2D>("diamond"));
-            particleEngine = new ParticleEngine(textures, new Vector2(400, 240));
+            Rectangle sourceRectangle = new Rectangle(0, 0, Texture.Width, Texture.Height);
+            Vector2 origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
+            spriteBatch.Draw(Texture, Position, sourceRectangle, Color, Angle, origin, Size, SpriteEffects.None, 0f);
         }
- 
-        protected override void UnloadContent()
-        {
-        }
- 
-        protected override void Update(GameTime gameTime)
-        {
-            // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                this.Exit();
- 
-            particleEngine.EmitterLocation = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
-            particleEngine.Update();
- 
-            base.Update(gameTime);
-        }
- 
-        protected override void Draw(GameTime gameTime)
-        {
-            GraphicsDevice.Clear(Color.Black);
- 
-            particleEngine.Draw(spriteBatch);
- 
-            base.Draw(gameTime);
-        }
+
     }
 }
